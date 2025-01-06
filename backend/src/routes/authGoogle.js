@@ -83,30 +83,46 @@ const setupAuthRoutes = (app) => {
 
   // Google callback route
   app.get("/auth/google/callback", (req, res, next) => {
-    passport.authenticate("google", (err, user) => {
+    passport.authenticate("google", async (err, user) => {
       if (err) {
-        return next(err);
+        console.error("Authentication error:", err);
+        return res.redirect(
+          "https://chronocam-web.vercel.app/signin?error=auth_failed"
+        );
       }
 
-      const token = jwt.sign(
-        { id: user._id, email: user.email, username: user.username },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-
-      // User is now created or found, log them in
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-
-        // Redirect to home page after successful login or signup
+      if (!user) {
+        console.error("No user returned from Google");
         return res.redirect(
-          `https://chronocam-web.vercel.app/login-success?token=${token}&userId=${user.id}`
+          "https://chronocam-web.vercel.app/signin?error=no_user"
+        );
+      }
+
+      try {
+        const token = jwt.sign(
+          {
+            id: user._id,
+            email: user.email,
+            username: user.username,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
         );
 
-        // return res.redirect(`http://localhost:5173/?id=${user.id}`);
-      });
+        // Build the redirect URL with properly encoded parameters
+        const redirectUrl = new URL(
+          "https://chronocam-web.vercel.app/login-success"
+        );
+        redirectUrl.searchParams.append("token", token);
+        redirectUrl.searchParams.append("userId", user._id.toString());
+
+        return res.redirect(redirectUrl.toString());
+      } catch (error) {
+        console.error("Token generation error:", error);
+        return res.redirect(
+          "https://chronocam-web.vercel.app/signin?error=token_generation_failed"
+        );
+      }
     })(req, res, next);
   });
 

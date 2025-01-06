@@ -59,6 +59,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((err, req, res, next) => {
+  console.error("Auth Error:", err);
+  res.redirect(
+    "https://chronocam-web.vercel.app/signin?error=" +
+      encodeURIComponent(err.message)
+  );
+});
+
 // Setup auth routes
 setupAuthRoutes(app);
 

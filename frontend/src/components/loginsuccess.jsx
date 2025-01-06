@@ -1,25 +1,39 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const LoginSuccess = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const userId = params.get("id");
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const userId = params.get("userId");
 
-    if (userId) {
-      // Simpan id ke localStorage
+    console.log("Token:", token); // For debugging
+    console.log("UserId:", userId); // For debugging
+
+    if (token && userId) {
+      // Store authentication data
+      localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
-      console.error("User ID not found in query parameters.");
-      // Arahkan ke halaman utama
-      navigate("/");
-    } else {
-      console.error("User ID not found in query parameters.");
-    }
-  }, [navigate]);
 
-  return <div>Processing login...</div>;
+      // Redirect to home page
+      navigate("/", { replace: true });
+    } else {
+      console.error("Authentication failed: Missing token or userId");
+      navigate("/signin", { replace: true });
+    }
+  }, [navigate, location]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h2 className="text-xl mb-4">Logging you in...</h2>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+      </div>
+    </div>
+  );
 };
 
 export default LoginSuccess;
