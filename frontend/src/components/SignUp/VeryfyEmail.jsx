@@ -10,13 +10,16 @@ const VerifyEmail = () => {
 
   const handleVerify = async () => {
     try {
-      const response = await fetch("https://backend-web-chrono-cam.vercel.app/auth/verify-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, verificationCode }),
-      });
+      const response = await fetch(
+        "https://chronocam-web-backend.vercel.app/auth/verify-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, verificationCode }),
+        }
+      );
 
       if (response.ok) {
         alert("Email berhasil diverifikasi.");
