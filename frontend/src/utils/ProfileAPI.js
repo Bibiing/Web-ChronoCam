@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://chrono-sand.vercel.app/api";
+const API_BASE_URL = "https://chronocam-web-backend.vercel.app/api";
 
 // Fetch user data
 export const fetchUserData = async (userId) => {

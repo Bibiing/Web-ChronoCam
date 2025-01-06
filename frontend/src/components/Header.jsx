@@ -51,7 +51,7 @@ const Header = () => {
   const fetchUsername = async (userId) => {
     try {
       const response = await fetch(
-        `https://chrono-sand.vercel.app/api/users/${userId}`
+        `https://chronocam-web-backend.vercel.app/api/users/${userId}`
       );
       const data = await response.json();
       if (data.username) {
@@ -76,7 +76,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        "https://chrono-sand.vercel.app/auth/logout",
+        "https://chronocam-web-backend.vercel.app/auth/logout",
         {
           method: "POST",
           credentials: "include",

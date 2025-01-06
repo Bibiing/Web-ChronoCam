@@ -75,13 +75,16 @@ const UploadForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://chrono-sand.vercel.app/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // Include token in Authorization header
-        },
-        body: formData, // Send formData with files and userId
-      });
+      const response = await fetch(
+        "https://chronocam-web-backend.vercel.app/upload",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in Authorization header
+          },
+          body: formData, // Send formData with files and userId
+        }
+      );
 
       const data = await response.json();
 

@@ -15,7 +15,7 @@ export const useFetchImages = (userId, filters) => {
         console.log("Fetching images with filters:", filters);
         const params = new URLSearchParams({ userId, ...filters }).toString();
         const response = await fetch(
-          `https://chrono-sand.vercel.app/images/user-images?${params}`
+          `https://chronocam-web-backend.vercel.app/images/user-images?${params}`
         );
 
         if (!response.ok) {

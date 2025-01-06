@@ -13,7 +13,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? "https://backend-web-chrono-cam.vercel.app/auth/google/callback"
+          ? "https://chronocam-web-backend.vercel.app/auth/google/callback"
           : "http://localhost:8080/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -102,7 +102,7 @@ const setupAuthRoutes = (app) => {
 
         // Redirect to home page after successful login or signup
         return res.redirect(
-          `https://chronocam.vercel.app/login-success?token=${token}`
+          `https://chronocam-web.vercel.app/login-success?token=${token}`
         );
 
         // return res.redirect(`http://localhost:5173/?id=${user.id}`);
