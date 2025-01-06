@@ -2,6 +2,7 @@ import passport from "passport";
 import dotenv from "dotenv";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -87,6 +88,12 @@ const setupAuthRoutes = (app) => {
         return next(err);
       }
 
+      const token = jwt.sign(
+        { id: user._id, email: user.email, username: user.username },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+
       // User is now created or found, log them in
       req.logIn(user, (err) => {
         if (err) {
@@ -95,7 +102,7 @@ const setupAuthRoutes = (app) => {
 
         // Redirect to home page after successful login or signup
         return res.redirect(
-          `https://chronocam.vercel.app/login-success?id=${user.id}`
+          `https://chronocam.vercel.app/login-success?token=${token}`
         );
 
         // return res.redirect(`http://localhost:5173/?id=${user.id}`);

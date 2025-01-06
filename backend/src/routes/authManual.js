@@ -7,6 +7,7 @@ import {
   validateVerificationData,
   validateSigninData,
 } from "../utils/validators.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
@@ -131,10 +132,18 @@ router.post("/signin", async (req, res) => {
       return res.status(400).json({ message: "Email atau password salah." });
     }
 
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" } // Token berlaku selama 1 jam
+    );
+
     // Kirim respons sukses beserta username
     res.status(200).json({
       message: "Login berhasil",
-      user: { id: user._id, email: user.email, username: user.username }, // Tambahkan username
+      token,
+      user: { id: user._id, email: user.email, username: user.username },
     });
   } catch (err) {
     console.error("Error during signin:", err);
@@ -142,27 +151,28 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-
 // logout
 router.post("/logout", (req, res) => {
   // Hapus sesi pengguna
   req.session.destroy((err) => {
     if (err) {
       console.error("Error during logout:", err);
-      return res.status(500).json({ message: "Terjadi kesalahan saat logout." });
+      return res
+        .status(500)
+        .json({ message: "Terjadi kesalahan saat logout." });
     }
-    
+
     res.clearCookie("connect.sid"); // Hapus cookie session
     return res.status(200).json({ message: "Logout berhasil." });
   });
 });
 
-router.get('/api/user/:userId', async (req, res) => {
+router.get("/api/user/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId); // Sesuaikan dengan model MongoDB Anda
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Pilih username jika ada, atau gunakan name jika tidak ada username
@@ -170,10 +180,8 @@ router.get('/api/user/:userId', async (req, res) => {
 
     return res.json({ username: displayName });
   } catch (err) {
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
 });
-
-
 
 export default router;

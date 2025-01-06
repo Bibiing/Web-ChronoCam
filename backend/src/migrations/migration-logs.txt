@@ -1,6 +1,0 @@
-2025-01-05T05:19:58.783Z: Connected to MongoDB
-2025-01-05T05:20:00.179Z: Found 131 documents to migrate
-2025-01-05T05:20:05.460Z: Processed 100/131 documents. Updated 100 in this batch.
-2025-01-05T05:20:05.744Z: Migration completed successfully
-2025-01-05T05:20:05.977Z: Verification: 31 documents still need migration
-2025-01-05T05:20:05.983Z: Database connection closed

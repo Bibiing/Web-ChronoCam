@@ -127,12 +127,12 @@ const Header = () => {
         <Link to="/" className={`${getLinkClass("/")} text-sm xl:text-base`}>
           Home
         </Link>
-        <Link
-          to="/Upload"
-          className={`${getLinkClass("/Upload")} text-sm xl:text-base`}
+        {/* <Link
+          to="/upload"
+          className={`${getLinkClass("/upload")} text-sm xl:text-base`}
         >
           Upload
-        </Link>
+        </Link> */}
 
         <img src={pipe} alt="separator" className="h-4 xl:h-6" />
 
@@ -208,12 +208,12 @@ const Header = () => {
             >
               Home
             </Link>
-            <Link
-              to="/Upload"
-              className={`${getLinkClass("/Upload")} text-sm sm:text-base`}
+            {/* <Link
+              to="/upload"
+              className={`${getLinkClass("/upload")} text-sm sm:text-base`}
             >
               Upload
-            </Link>
+            </Link> */}
             {userId ? (
               <>
                 <Link

@@ -15,7 +15,7 @@ const routes = [
     element: <PlaybacksPage />, // as /
   },
   {
-    path: "/Upload",
+    path: "/upload",
     element: <LandingPage />,
   },
   {

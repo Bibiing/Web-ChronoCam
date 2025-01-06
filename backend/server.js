@@ -4,8 +4,6 @@ import passport from "passport";
 import mongoose from "mongoose";
 import session from "express-session";
 import cors from "cors";
-import cookieParser from "cookie-parser";
-import MongoStore from "connect-mongo";
 import setupAuthRoutes from "./src/routes/authGoogle.js";
 import manualAuthRoutes from "./src/routes/authManual.js";
 import userRoutes from "./src/routes/userRoutes.js";
@@ -30,62 +28,37 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://web-chrono-cam-six.vercel.app",
       "https://chronocam.vercel.app",
       "https://accounts.google.com",
       "https://backend-web-chrono-cam.vercel.app/auth/google/callback",
       "https://chrono-sand.vercel.app",
       "http://localhost:5173",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-    exposedHeaders: ["set-cookie"],
+    methods: ["GET", "POST", "PUT"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-app.use(cookieParser(process.env.SESSION_SECRET));
-
 // Middleware untuk parsing JSON
 app.use(express.json({ limit: "1gb" }));
-app.use(express.urlencoded({ extended: true, limit: "1gb" }));
 
-// Session configuration
-const sessionConfig = {
-  store: MongoStore.create({
-    mongoUrl: uri,
-    ttl: 24 * 60 * 60, // 1 day
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  name: "sessionId", // Custom cookie name
-  cookie: {
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
-    path: "/",
-  },
-  proxy: process.env.NODE_ENV === "production", // Trust the reverse proxy
-};
-
-app.use(session(sessionConfig));
+// Setup session
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production", // Use secure in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Set security headers
-app.use((req, res, next) => {
-  res.set({
-    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block",
-  });
-  next();
-});
 
 // Setup auth routes
 setupAuthRoutes(app);

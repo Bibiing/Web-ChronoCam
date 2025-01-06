@@ -1,15 +1,15 @@
-// frontend/src/components/landing/Upload.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import FileInput from "./Input";
 import UploadButton from "./UploadButton";
 import Popup from "../Popup";
 
 const UploadForm = () => {
-  const navigate = useNavigate();
   const [fileNames, setFileNames] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // State for popup
   const [popup, setPopup] = useState({
     isOpen: false,
     message: "",
@@ -30,6 +30,20 @@ const UploadForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    // Check if userId exists
+    if (!userId) {
+      setPopup({
+        isOpen: true,
+        message: "Username not found. Please log in again.",
+        type: "error",
+      });
+      return;
+    }
+
+    // Check if any files are selected
     if (selectedFiles.length === 0) {
       setPopup({
         isOpen: true,
@@ -39,9 +53,10 @@ const UploadForm = () => {
       return;
     }
 
-    // File size check
+    // File size check (1GB limit)
     for (let file of selectedFiles) {
       if (file.size > 1 * 1024 * 1024 * 1024) {
+        // 1GB
         setPopup({
           isOpen: true,
           message: `File ${file.name} exceeds the 1GB limit.`,
@@ -55,30 +70,20 @@ const UploadForm = () => {
     selectedFiles.forEach((file) => {
       formData.append("foto", file);
     });
+    formData.append("userId", userId);
 
     setIsLoading(true);
 
     try {
       const response = await fetch("https://chrono-sand.vercel.app/upload", {
         method: "POST",
-        credentials: "include", // Important: This enables sending cookies
-        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in Authorization header
+        },
+        body: formData, // Send formData with files and userId
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Redirect to login if session is invalid
-          navigate("/");
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-
-      // Clear form after successful upload
-      setSelectedFiles([]);
-      setFileNames([]);
 
       setPopup({
         isOpen: true,
@@ -88,7 +93,7 @@ const UploadForm = () => {
     } catch (error) {
       setPopup({
         isOpen: true,
-        message: "An error occurred during the upload. Please try again.",
+        message: "An error occurred during the upload.",
         type: "error",
       });
     } finally {
