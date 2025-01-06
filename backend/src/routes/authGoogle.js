@@ -102,7 +102,7 @@ const setupAuthRoutes = (app) => {
 
         // Redirect to home page after successful login or signup
         return res.redirect(
-          `https://chronocam-web.vercel.app/login-success?token=${token}`
+          `https://chronocam-web.vercel.app/login-success?token=${token}&userId=${user.id}`
         );
 
         // return res.redirect(`http://localhost:5173/?id=${user.id}`);

@@ -28,12 +28,12 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://chronocam-web.vercel.app/",
+      "https://chronocam-web.vercel.app",
       "https://accounts.google.com",
-      "https://chronocam-web-backend.vercel.app/",
+      "https://chronocam-web-backend.vercel.app",
       "http://localhost:5173",
     ],
-    methods: ["GET", "POST", "PUT"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -50,7 +50,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production", // Use secure in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
